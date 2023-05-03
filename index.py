@@ -1,4 +1,5 @@
 import argparse
+import json
 
 parser = argparse.ArgumentParser(description='Program do konwersji danych w formatach .xml, .json i .yml')
 
@@ -8,6 +9,19 @@ parser.add_argument('--format', type=str, choices=['xml', 'json', 'yml'], defaul
 
 args = parser.parse_args()
 
+
+with open(args.input_file, 'r') as f:
+    try:
+        data = json.load(f)
+    except json.JSONDecodeError as e:
+        print("Błąd w parsowaniu pliku JSON: ", e)
+        exit(1)
+
+
+
+print("Konwersja zakończona powodzeniem")
+'''
 print('Nazwa pliku wejściowego:', args.input_file)
 print('Nazwa pliku wyjściowego:', args.output_file)
 print('Format pliku wyjściowego:', args.format)
+'''
