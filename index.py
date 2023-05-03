@@ -10,17 +10,17 @@ parser.add_argument('--format', type=str, choices=['xml', 'json', 'yml'], defaul
 
 args = parser.parse_args()
 
-if args.input_file.endswitch('.json'):
+if args.input_file.endswith('.json'):
     with open(args.input_file, 'r') as f:
         try:
             data = json.load(f)
         except json.JSONDecodeError as e:
             print("Błąd w parsowaniu pliku JSON: ", e)
             exit(1)
-elif args.input_file.endswitch('.yml') or args.input_file.endswitch('.yaml'):
+elif args.input_file.endswith('.yml') or args.input_file.endswith('.yaml'):
     with open(args.input_file, 'r') as f:
         try:
-            data = yaml.load(f)
+            data = yaml.safe_load(f)
         except yaml.YAMLError as e:
             print("Błąd w parsowaniu pliku YAML: ", e)
             exit(1)
@@ -28,10 +28,15 @@ else:
     print("Nieobsługiwany foramt pliku wejściowego: ", args.input_file)
     exit(1)
 
-
-with open(args.output_file, 'w') as f:
-    json.dump(data, f, indent=4, sort_keys=True)
-
+if args.format == "json":
+    with open(args.output_file, 'w') as f:
+        json.dump(data, f, indent=4, sort_keys=True)
+elif args.format == "yml" or args.format == "yaml":
+    with open(args.output_file, 'w') as f:
+        yaml.dump(data, f, default_flow_style=False)
+else:
+    print("Niebsługiwany plik formatu wyjściowego:", args.format)
+    exit(1)
 print("Konwersja zakończona powodzeniem")
 '''
 print('Nazwa pliku wejściowego:', args.input_file)
