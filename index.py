@@ -1,6 +1,7 @@
 import argparse
 import json
 import yaml
+import xml.etree.ElementTree as ET
 
 parser = argparse.ArgumentParser(description='Program do konwersji danych w formatach .xml, .json i .yml')
 
@@ -24,6 +25,13 @@ elif args.input_file.endswith('.yml') or args.input_file.endswith('.yaml'):
         except yaml.YAMLError as e:
             print("Błąd w parsowaniu pliku YAML: ", e)
             exit(1)
+elif args.input_file.endswith('.xml'):
+    try:
+        tree = ET.parse(args.input_file)
+        data = tree.getroot()
+    except ET.ParseError as e:
+        print("Błąd w parsowaniu pliku XML: ", e)
+        exit(1)
 else:
     print("Nieobsługiwany foramt pliku wejściowego: ", args.input_file)
     exit(1)
