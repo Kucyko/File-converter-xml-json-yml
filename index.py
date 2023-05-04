@@ -28,11 +28,10 @@ elif args.input_file.endswith('.yml') or args.input_file.endswith('.yaml'):
             exit(1)
 elif args.input_file.endswith('.xml'):
     try:
-        # wczytanie pliku XML
+        
         tree = ET.parse(args.input_file)
         root = tree.getroot()
 
-        # konwersja obiektu ElementTree na słownik
         data = dict()
         for child in root:
             data[child.tag] = child.text
@@ -55,13 +54,11 @@ elif args.format == "yml" or args.format == "yaml":
         yaml.dump(data, f, default_flow_style=False)
 elif args.format == "xml":
     try:
-        # konwersja słownika na obiekt ElementTree
         root = ET.Element('data')
         for key, value in data.items():
             child = ET.SubElement(root, key)
             child.text = str(value)
 
-        # zapisanie obiektu ElementTree do pliku XML
         tree = ET.ElementTree(root)
         tree.write(args.output_file, encoding='utf-8', xml_declaration=True)
     except Exception as e:
