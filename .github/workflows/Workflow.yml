@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-dotnet@v1
       
       - name: Konfiguracja serwera
-        run: .\installResources.ps1
+        run: .\installResources.bat
       
       - name: Sprawdzenie dostępności narzędzia dotnet
         run: dotnet --version
