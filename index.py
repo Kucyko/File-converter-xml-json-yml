@@ -3,73 +3,106 @@ import json
 import yaml
 import xml.etree.ElementTree as ET
 import xmltodict
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QLineEdit, QPushButton, QMessageBox, QFileDialog
 
-parser = argparse.ArgumentParser(description='Program do konwersji danych w formatach .xml, .json i .yml')
+class ConverterApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Konwerter danych')
+        self.setup_ui()
 
-parser.add_argument('input_file', type=str, help='Nazwa pliku wejściowego')
-parser.add_argument('output_file', type=str, help='Nazwa pliku wyjściowego')
-parser.add_argument('--format', type=str, choices=['xml', 'json', 'yml'], default='json', help='Format pliku wyjściowego')
+    def setup_ui(self):
+        layout = QVBoxLayout()
 
-args = parser.parse_args()
+        input_label = QLabel('Nazwa pliku wejściowego:')
+        self.input_lineedit = QLineEdit()
+        layout.addWidget(input_label)
+        layout.addWidget(self.input_lineedit)
 
-if args.input_file.endswith('.json'):
-    with open(args.input_file, 'r') as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError as e:
-            print("Błąd w parsowaniu pliku JSON: ", e)
-            exit(1)
-elif args.input_file.endswith('.yml') or args.input_file.endswith('.yaml'):
-    with open(args.input_file, 'r') as f:
-        try:
-            data = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            print("Błąd w parsowaniu pliku YAML: ", e)
-            exit(1)
-elif args.input_file.endswith('.xml'):
-    try:
+        output_label = QLabel('Nazwa pliku wyjściowego:')
+        self.output_lineedit = QLineEdit()
+        layout.addWidget(output_label)
+        layout.addWidget(self.output_lineedit)
+
+        convert_button = QPushButton('Konwertuj')
+        convert_button.clicked.connect(self.convert)
+        layout.addWidget(convert_button)
+
+        self.setLayout(layout)
+
+    def convert(self):
+        input_file = self.input_lineedit.text()
+        output_file = self.output_lineedit.text()
+
+        if input_file.endswith('.json'):
+            with open(input_file, 'r') as f:
+                try:
+                    data = json.load(f)
+                except json.JSONDecodeError as e:
+                    self.show_error_message("Błąd w parsowaniu pliku JSON: " + str(e))
+                    return
+        elif input_file.endswith('.yml') or input_file.endswith('.yaml'):
+            with open(input_file, 'r') as f:
+                try:
+                    data = yaml.safe_load(f)
+                except yaml.YAMLError as e:
+                    self.show_error_message("Błąd w parsowaniu pliku YAML: " + str(e))
+                    return
+        elif input_file.endswith('.xml'):
+            try:
+                tree = ET.parse(input_file)
+                root = tree.getroot()
+
+                data = dict()
+                for child in root:
+                    data[child.tag] = child.text
+
+            except ET.ParseError as e:
+                self.show_error_message("Błąd parsowania pliku XML: " + str(e))
+                return
+            except Exception as e:
+                self.show_error_message("Błąd odczytu pliku: " + str(e))
+                return
+        else:
+            self.show_error_message("Nieobsługiwany format pliku wejściowego: " + input_file)
+            return
+
+        output_format = output_file.split('.')[-1]
+
+        if output_format == "json":
+            with open(output_file, 'w') as f:
+                json.dump(data, f, indent=4, sort_keys=True)
+        elif output_format == "yml" or output_format == "yaml":
+            with open(output_file, 'w') as f:
+                yaml.dump(data, f, default_flow_style=False)
+        elif output_format == "xml":
+            try:
+                root = ET.Element('data')
+                for key, value in data.items():
+                    child = ET.SubElement(root, key)
+                    child.text = str(value)
+
+                tree = ET.ElementTree(root)
+                tree.write(output_file, encoding='utf-8', xml_declaration=True)
+            except Exception as e:
+                self.show_error_message("Błąd zapisu pliku XML: " + str(e))
+                return
+        else:
+            self.show_error_message("Nieobsługiwany format pliku wyjściowego: " + output_format)
+            return
+
         
-        tree = ET.parse(args.input_file)
-        root = tree.getroot()
+        self.show_success_message("Konwersja zakończona powodzeniem")
 
-        data = dict()
-        for child in root:
-            data[child.tag] = child.text
+    def show_error_message(self, message):
+        QMessageBox.critical(self, "Błąd", message)
 
-    except ET.ParseError as e:
-        print(f'Błąd parsowania pliku XML: {e}')
-        exit(1)
-    except Exception as e:
-        print(f'Błąd odczytu pliku: {e}')
-        exit(1)
-else:
-    print("Nieobsługiwany foramt pliku wejściowego: ", args.input_file)
-    exit(1)
+    def show_success_message(self, message):
+        QMessageBox.information(self, "Sukces", message)
 
-if args.format == "json":
-    with open(args.output_file, 'w') as f:
-        json.dump(data, f, indent=4, sort_keys=True)
-elif args.format == "yml" or args.format == "yaml":
-    with open(args.output_file, 'w') as f:
-        yaml.dump(data, f, default_flow_style=False)
-elif args.format == "xml":
-    try:
-        root = ET.Element('data')
-        for key, value in data.items():
-            child = ET.SubElement(root, key)
-            child.text = str(value)
-
-        tree = ET.ElementTree(root)
-        tree.write(args.output_file, encoding='utf-8', xml_declaration=True)
-    except Exception as e:
-        print(f'Błąd zapisu pliku XML: {e}')
-        exit(1)
-else:
-    print("Niebsługiwany plik formatu wyjściowego:", args.format)
-    exit(1)
-print("Konwersja zakończona powodzeniem")
-'''
-print('Nazwa pliku wejściowego:', args.input_file)
-print('Nazwa pliku wyjściowego:', args.output_file)
-print('Format pliku wyjściowego:', args.format)
-'''
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    converter_app = ConverterApp()
+    converter_app.show()
+    sys.exit(app.exec_())

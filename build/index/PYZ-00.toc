@@ -1,6 +1,9 @@
 ('C:\\Users\\dell\\Downloads\\PROJECT-IT-LAB6-main '
  '(1)\\PROJECT-IT-LAB6-main\\build\\index\\PYZ-00.pyz',
- [('_compat_pickle',
+ [('PyQt5',
+   'C:\\Users\\dell\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyQt5\\__init__.py',
+   'PYMODULE'),
+  ('_compat_pickle',
    'C:\\Users\\dell\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\_compat_pickle.py',
    'PYMODULE'),
   ('_compression',
@@ -255,6 +258,9 @@
   ('pickle',
    'C:\\Users\\dell\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\pickle.py',
    'PYMODULE'),
+  ('pkgutil',
+   'C:\\Users\\dell\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\pkgutil.py',
+   'PYMODULE'),
   ('platform',
    'C:\\Users\\dell\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\platform.py',
    'PYMODULE'),
@@ -416,4 +422,7 @@
    'PYMODULE'),
   ('zipfile',
    'C:\\Users\\dell\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\zipfile.py',
+   'PYMODULE'),
+  ('zipimport',
+   'C:\\Users\\dell\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\zipimport.py',
    'PYMODULE')])
