@@ -29,13 +29,17 @@ jobs:
         run: dotnet --version
       
       - name: Budowanie projektu
-        run: dotnet build --configuration Release
+        run: |
+          cd ${{ github.workspace }}
+          dotnet build --configuration Release
       
       - name: Tworzenie pliku .exe
-        run: dotnet publish --configuration Release --output ./publish
+        run: |
+          cd ${{ github.workspace }}
+          dotnet publish --configuration Release --output ./publish
       
       - name: Zapisywanie pliku .exe jako artefakt
         uses: actions/upload-artifact@v3
         with:
-          name: index.exe
+          name: indexx.exe
           path: ./publish/NaszPlik.exe
