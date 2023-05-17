@@ -30,12 +30,12 @@ jobs:
       
       - name: Budowanie projektu
         run: |
-          cd ${{ github.workspace }}
+          cd C:\Users\greka\Documents\Project IT lab6\PROJECT-IT-LAB6
           dotnet build --configuration Release
       
       - name: Tworzenie pliku .exe
         run: |
-          cd ${{ github.workspace }}
+          cd C:\Users\greka\Documents\Project IT lab6\PROJECT-IT-LAB6
           dotnet publish --configuration Release --output ./publish
       
       - name: Zapisywanie pliku .exe jako artefakt
