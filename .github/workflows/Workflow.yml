@@ -1,0 +1,35 @@
+name: Workflow
+on:
+  schedule:
+    - cron: "0 0 * * 0" # Raz w tygodniu, w niedzielę o północy
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout kodu
+        uses: actions/checkout@v2
+      
+      - name: Konfiguracja serwera
+        run: .\installResources.ps1
+      
+      - name: Budowanie projektu
+        run: msbuild /t:Build /p:Configuration=Release
+      
+      - name: Tworzenie pliku .exe
+        run: dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
+      
+      - name: Zapisywanie pliku .exe jako artefakt
+        uses: actions/upload-artifact@v3
+        with:
+          name: index.exe
+          path: ./publish/NaszPlik.exe
