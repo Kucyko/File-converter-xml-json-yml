@@ -1,42 +1,34 @@
 name: Workflow
 on:
-  schedule:
-    - cron: "0 0 * * 0" # Raz w tygodniu, w niedzielę o północy
   push:
     branches:
       - main
-  workflow_dispatch:
-
-defaults:
-  run:
-    shell: pwsh
+  schedule:
+    - cron: "0 0 * * 0" # Automatycznie raz w tygodniu (w każdą niedzielę o północy)
+  workflow_dispatch: # Ręcznie przez użytkownika
 
 jobs:
   build:
-    runs-on: windows-latest
-    
+    runs-on: windows-latest # Ustawienie domyślnego serwera Windows
+
     steps:
-      - name: Checkout kodu
-        uses: actions/checkout@v2
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.x" # Wybierz wersję Pythona, którą chcesz zainstalować
+
+    - name: Install dependencies
+      run: .\installResources.bat
       
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-      
-      - name: Konfiguracja serwera
-        run: .\installResources.bat
-      
-      - name: Sprawdzenie dostępności narzędzia dotnet
-        run: dotnet --version
-      
-      - name: Budowanie projektu
-        run: dotnet build --configuration Release
-      
-      - name: Tworzenie pliku .exe
-        run: dotnet publish --configuration Release --output ./publish
-      
-      - name: Zapisywanie pliku .exe jako artefakt
-        uses: actions/upload-artifact@v3
-    
-        with:
-          name: indexx.exe
-          path: ./publish/NaszPlik.exe
+
+    - name: Build .exe
+      run: pyinstaller --onefile index.py
+
+    - name: Create artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: program.exe
+        path: path/do/tworzonego/pliku.exe # Zastąp ścieżką do tworzonego pliku .exe
