@@ -19,14 +19,20 @@ jobs:
       - name: Checkout kodu
         uses: actions/checkout@v2
       
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+      
       - name: Konfiguracja serwera
         run: .\installResources.bat
       
+      - name: Sprawdzenie dostępności narzędzia dotnet
+        run: dotnet --version
+      
       - name: Budowanie projektu
-        run: msbuild /t:Build /p:Configuration=Release
+        run: dotnet build --configuration Release
       
       - name: Tworzenie pliku .exe
-        run: dotnet publish -c Release -r win-x64 --self-contained true --output ./publish
+        run: dotnet publish --configuration Release --output ./publish
       
       - name: Zapisywanie pliku .exe jako artefakt
         uses: actions/upload-artifact@v3
