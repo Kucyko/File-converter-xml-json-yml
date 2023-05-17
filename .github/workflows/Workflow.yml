@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Konfiguracja serwera
-        run: .\installResources.ps1
+        run: .\installResources.bat
       
       - name: Budowanie projektu
         run: msbuild /t:Build /p:Configuration=Release
